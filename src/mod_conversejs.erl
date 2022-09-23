@@ -59,6 +59,9 @@ process([], #request{method = 'GET', host = Host, raw_path = RawPath}) ->
     Script = get_file_url(Host, conversejs_script,
                           <<RawPath/binary, "/converse.min.js">>,
                           <<"https://cdn.conversejs.org/dist/converse.min.js">>),
+    Libsignal = get_file_url(Host, conversejs_libsignal,
+                          <<RawPath/binary, "/libsignal-protocol.min.js">>,
+                          <<"https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js">>),
     CSS = get_file_url(Host, conversejs_css,
                        <<RawPath/binary, "/converse.min.css">>,
                        <<"https://cdn.conversejs.org/dist/converse.min.css">>),
@@ -88,6 +91,7 @@ process([], #request{method = 'GET', host = Host, raw_path = RawPath}) ->
       <<"<link rel='stylesheet' type='text/css' media='screen' href='">>,
       fxml:crypt(CSS), <<"'>">>,
       <<"<script src='">>, fxml:crypt(Script), <<"' charset='utf-8'></script>">>,
+      <<"<script src='">>, fxml:crypt(Libsignal), <<"' charset='utf-8'></script>">>,
       <<"</head>">>,
       <<"<body>">>,
       <<"<script>">>,
@@ -234,6 +238,8 @@ mod_opt_type(conversejs_options) ->
     econf:map(econf:binary(), econf:either(econf:binary(), econf:int()));
 mod_opt_type(conversejs_script) ->
     econf:binary();
+mod_opt_type(conversejs_libsignal) ->
+    econf:binary();
 mod_opt_type(conversejs_css) ->
     econf:binary();
 mod_opt_type(default_domain) ->
@@ -246,6 +252,7 @@ mod_options(_) ->
      {conversejs_resources, undefined},
      {conversejs_options, []},
      {conversejs_script, auto},
+     {conversejs_libsignal, auto},
      {conversejs_css, auto}].
 
 mod_doc() ->
@@ -260,7 +267,7 @@ mod_doc() ->
            ?T("Make sure either 'mod_bosh' or 'ejabberd_http_ws' "
               "http://../listen-options/#request-handlers[request_handlers] "
               "are enabled."), "",
-           ?T("When 'conversejs_css' and 'conversejs_script' are 'auto', "
+           ?T("When 'conversejs_css' 'conversejs_script' and 'conversejs_libsignal' are 'auto', "
               "by default they point to the public Converse client.")
           ],
       example =>
@@ -346,6 +353,12 @@ mod_doc() ->
             #{value => ?T("auto | URL"),
               desc =>
                   ?T("Converse main script URL. "
+                     "The keyword '@HOST@' is replaced with the hostname. "
+                     "The default value is 'auto'.")}},
+           {conversejs_libsignal,
+            #{value => ?T("auto | URL"),
+              desc =>
+                  ?T("Converse libsignal-protocolo script URL. "
                      "The keyword '@HOST@' is replaced with the hostname. "
                      "The default value is 'auto'.")}},
            {conversejs_css,

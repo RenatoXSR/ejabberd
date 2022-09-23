@@ -8,6 +8,7 @@
 -export([conversejs_options/1]).
 -export([conversejs_resources/1]).
 -export([conversejs_script/1]).
+-export([conversejs_libsignal/1]).
 -export([default_domain/1]).
 -export([websocket_url/1]).
 
@@ -40,6 +41,12 @@ conversejs_script(Opts) when is_map(Opts) ->
     gen_mod:get_opt(conversejs_script, Opts);
 conversejs_script(Host) ->
     gen_mod:get_module_opt(Host, mod_conversejs, conversejs_script).
+
+-spec conversejs_libsignal(gen_mod:opts() | global | binary()) -> 'auto' | binary().
+conversejs_libsignal(Opts) when is_map(Opts) ->
+    gen_mod:get_opt(conversejs_libsignal, Opts);
+conversejs_libsignal(Host) ->
+    gen_mod:get_module_opt(Host, mod_conversejs, conversejs_libsignal).
 
 -spec default_domain(gen_mod:opts() | global | binary()) -> binary().
 default_domain(Opts) when is_map(Opts) ->
